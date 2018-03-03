@@ -3,7 +3,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 
-public class outPutMaker {
+public class OutputMaker {
 
     static String outPut = "";
 
@@ -26,11 +26,4 @@ public class outPutMaker {
         out.flush();
     }
 
-//    public static int getPoints(List<Car> cars) {
-//        int points = 0;
-//        for (Car c : cars) {
-//            points += (c. + 1 - s.startRow) * (s.endColumn + 1 - s.startColumn);
-//        }
-//        return points;
-//    }
 }

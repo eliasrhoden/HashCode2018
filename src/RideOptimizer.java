@@ -38,6 +38,11 @@ public class RideOptimizer {
             }
             printProgress(t,nrOfTimeSteps);
         }
+        return createCarsFromSchedule(schedules);
+    }
+
+
+    public List<Car> createCarsFromSchedule(Ride[][] schedule){
         return null;
     }
 
