@@ -44,14 +44,12 @@ public class ProblemState {
         List<Ride> ArideList = new ArrayList<>();
         int counter = 0;
         for(String currentString : lines){
-
-
             posInfo = currentString.split(" ");
-           Position start = new Position(Integer.parseInt(posInfo[0]),Integer.parseInt(posInfo[1]));
-           Position finish = new Position(Integer.parseInt(posInfo[2]),Integer.parseInt(posInfo[3]));
-           Ride ride = new Ride(counter, start,finish,Integer.parseInt(posInfo[4]),Integer.parseInt(posInfo[5]));
-           ArideList.add(ride);
-          counter++;
+            Position start = new Position(Integer.parseInt(posInfo[0]),Integer.parseInt(posInfo[1]));
+            Position finish = new Position(Integer.parseInt(posInfo[2]),Integer.parseInt(posInfo[3]));
+            Ride ride = new Ride(counter, start,finish,Integer.parseInt(posInfo[4]),Integer.parseInt(posInfo[5]));
+            ArideList.add(ride);
+            counter++;
         }
 
 
