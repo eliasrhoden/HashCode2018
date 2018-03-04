@@ -10,9 +10,12 @@ import java.util.List;
 public class RideOptimizer {
 
     public Ride[][] schedules;
+    private int bonus;
 
-    public RideOptimizer(int nrOfCars, int nrOfTimeSteps){
+
+    public RideOptimizer(int nrOfCars, int nrOfTimeSteps, int bonus){
         schedules = new Ride[nrOfCars][nrOfTimeSteps];
+        this.bonus = bonus;
         System.out.println("No of cars: " + nrOfCars);
         System.out.println("No of timesteps: " + nrOfTimeSteps);
     }
@@ -44,7 +47,6 @@ public class RideOptimizer {
         }
         return createCarsFromSchedule(schedules);
     }
-
 
     public List<Car> createCarsFromSchedule(Ride[][] schedule){
         List<Car> result = new LinkedList<>();
