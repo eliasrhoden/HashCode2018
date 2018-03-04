@@ -8,11 +8,9 @@ import java.util.List;
 public class RideOptimizer {
 
     public Ride[][] schedules;
-    private int bonus;
 
-    public RideOptimizer(int nrOfCars, int nrOfTimeSteps, int bonus){
+    public RideOptimizer(int nrOfCars, int nrOfTimeSteps){
         schedules = new Ride[nrOfCars][nrOfTimeSteps];
-        this.bonus = bonus;
         System.out.println("No of cars: " + nrOfCars);
         System.out.println("No of time steps: " + nrOfTimeSteps);
     }
