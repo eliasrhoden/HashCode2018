@@ -13,6 +13,8 @@ public class RideOptimizer {
 
     public RideOptimizer(int nrOfCars, int nrOfTimeSteps){
         schedules = new Ride[nrOfCars][nrOfTimeSteps];
+        System.out.println("No of cars: " + nrOfCars);
+        System.out.println("No of timesteps: " + nrOfTimeSteps);
     }
 
     public List<Car> optimzeCarRoutes(List<Ride> rides){
@@ -26,7 +28,6 @@ public class RideOptimizer {
             ridesAllowedToStart.removeIf((Ride r)->r.START_STEP != step);
 
             Ride.sortByStepsRequired(ridesAllowedToStart);
-
             for(Ride r:ridesAllowedToStart){
                    for(int car = 0; car < schedules.length;car++){
                        CarScheduleAnalyzer can = new CarScheduleAnalyzer(schedules[car],r);
@@ -35,6 +36,7 @@ public class RideOptimizer {
                            int startStep = can.getStartStep();
                            bookCar(car,r,startStep);
                            rides.remove(r);
+                           break;
                        }
                    }
             }
@@ -45,7 +47,20 @@ public class RideOptimizer {
 
 
     public List<Car> createCarsFromSchedule(Ride[][] schedule){
-        return null;
+        List<Car> result = new LinkedList<>();
+        for(int car = 0;car <schedule.length;car++){
+            Car c = new Car();
+            int id = -1;
+            for(int i = 0;i<schedule[0].length;i++){
+                Ride r = schedule[car][i];
+                if(r != null && r.ID != id){
+                    c.addRideToSchedule(r);
+                    id = r.ID;
+                }
+            }
+            result.add(c);
+        }
+        return result;
     }
 
     private void printProgress(int t, int nrOfTimeSteps) {

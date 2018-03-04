@@ -8,7 +8,7 @@ public class Car {
 
     private List<Ride> schedule;
     
-    public Car(int id){
+    public Car(){
         schedule = new LinkedList<>();
     }
 
