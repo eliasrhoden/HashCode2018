@@ -1,6 +1,4 @@
-import java.sql.Time;
-import java.util.ArrayDeque;
-import java.util.Collections;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,11 +8,13 @@ import java.util.List;
 public class RideOptimizer {
 
     public Ride[][] schedules;
+    private int bonus;
 
-    public RideOptimizer(int nrOfCars, int nrOfTimeSteps){
+    public RideOptimizer(int nrOfCars, int nrOfTimeSteps, int bonus){
         schedules = new Ride[nrOfCars][nrOfTimeSteps];
+        this.bonus = bonus;
         System.out.println("No of cars: " + nrOfCars);
-        System.out.println("No of timesteps: " + nrOfTimeSteps);
+        System.out.println("No of time steps: " + nrOfTimeSteps);
     }
 
     public List<Car> optimzeCarRoutes(List<Ride> rides){
@@ -25,20 +25,39 @@ public class RideOptimizer {
         for(int t = 0;t<nrOfTimeSteps;t++){
             final int step = t;
             List<Ride> ridesAllowedToStart = new LinkedList<>(rides);
-            ridesAllowedToStart.removeIf((Ride r)->r.START_STEP != step);
+            ridesAllowedToStart.removeIf((Ride r)->r.START_STEP > step);
 
             Ride.sortByStepsRequired(ridesAllowedToStart);
+            int tot = ridesAllowedToStart.size();
+            int inner = 0;
             for(Ride r:ridesAllowedToStart){
+                int bestStart = Integer.MAX_VALUE;
+                int bestCar = -1;
+                boolean foundBest = false;
                    for(int car = 0; car < schedules.length;car++){
                        CarScheduleAnalyzer can = new CarScheduleAnalyzer(schedules[car],r);
-
                        if(can.rideFitsInschedule()){
                            int startStep = can.getStartStep();
-                           bookCar(car,r,startStep);
-                           rides.remove(r);
-                           break;
+                           if(startStep == t) {
+                               bookCar(car, r, startStep);
+                               rides.remove(r);
+                               foundBest = true;
+                               break;
+                           }
+                           if(startStep <= bestStart){
+                               bestStart = startStep;
+                               bestCar = car;
+                           }
                        }
                    }
+                   if(!foundBest && bestCar != -1) {
+                       bookCar(bestCar, r, bestStart);
+                       rides.remove(r);
+                   }
+
+                   inner++;
+                System.out.print("\t");
+                printProgress(inner,tot);
             }
             printProgress(t,nrOfTimeSteps);
         }
@@ -79,7 +98,6 @@ public class RideOptimizer {
         private int firstStep;
         private List<TimeBlock> freeTime;
 
-
         public CarScheduleAnalyzer(Ride[] carShedule, Ride r){
             if(r.END_STEP - r.START_STEP < r.stepsRequired){
                 fits = false;
@@ -108,7 +126,6 @@ public class RideOptimizer {
                 }
             }
         }
-
 
         private Position postPos(int end) {
             for(int i = end;i<schedule.length;i++){
