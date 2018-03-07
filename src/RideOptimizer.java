@@ -11,7 +11,7 @@ public class RideOptimizer {
 
     public Ride[][] schedules;
     private int bonus;
-
+    private final int DEEP_LVL = 5;
 
     public RideOptimizer(int nrOfCars, int nrOfTimeSteps, int bonus){
         schedules = new Ride[nrOfCars][nrOfTimeSteps];
@@ -23,30 +23,30 @@ public class RideOptimizer {
     public List<Car> optimzeCarRoutes(List<Ride> rides){
         System.out.println("Starting rides optimizing!");
 
-        int nrOfTimeSteps = schedules[0].length;
+        Ride.sortByStartStep(rides);
 
-        for(int t = 0;t<nrOfTimeSteps;t++){
-            final int step = t;
-            List<Ride> ridesAllowedToStart = new LinkedList<>(rides);
-            ridesAllowedToStart.removeIf((Ride r)->r.START_STEP != step);
+        for(int car = 0;car < schedules.length;car++){
 
-            Ride.sortByStepsRequired(ridesAllowedToStart);
-            for(Ride r:ridesAllowedToStart){
-                   for(int car = 0; car < schedules.length;car++){
-                       CarScheduleAnalyzer can = new CarScheduleAnalyzer(schedules[car],r);
+            List<BookingSequence> possibleBookings = new LinkedList<>();
+            List<Ride> ridesToUse = new LinkedList<>(rides);
 
-                       if(can.rideFitsInschedule()){
-                           int startStep = can.getStartStep();
-                           bookCar(car,r,startStep);
-                           rides.remove(r);
-                           break;
-                       }
-                   }
-            }
-            printProgress(t,nrOfTimeSteps);
+            findPossibleBookingSequnces(ridesToUse,possibleBookings);
+            Collections.sort(possibleBookings);
+
+            bookSequence(possibleBookings.get(0),car);
+
         }
         return createCarsFromSchedule(schedules);
     }
+
+    private void bookSequence(BookingSequence bookingSequence, int car) {
+
+    }
+
+    private void findPossibleBookingSequnces(List<Ride> ridesToUse, List<BookingSequence> possibleBookings) {
+
+    }
+
 
     public List<Car> createCarsFromSchedule(Ride[][] schedule){
         List<Car> result = new LinkedList<>();
@@ -72,6 +72,51 @@ public class RideOptimizer {
     public void bookCar(int car, Ride ride, int startOfRide){
         for(int i =startOfRide;i<startOfRide + ride.stepsRequired;i++){
             schedules[car][i] = ride;
+        }
+    }
+
+    public static class BookingSequence implements Comparable{
+        public List<Ride> rides;
+        public int timeSteps;
+        public int bonus;
+
+        public BookingSequence(int timeSteps, int bonus){
+            rides = new LinkedList<>();
+            this.timeSteps = timeSteps;
+            this.bonus = bonus;
+        }
+
+        public void addRide(Ride r){
+            rides.add(r);
+        }
+
+        public int getPoints(){
+            LinkedList<Ride> ridesLeftToStart = new LinkedList<>(rides);
+            Ride current = ridesLeftToStart.pollFirst();
+            int points = 0;
+            for(int i = 0;i<timeSteps;i++){
+
+                if(current == null)
+                    break;
+                if(current.START_STEP <= i){
+                    if(current.START_STEP == i){
+                        points+= bonus;
+                    }
+                    int end = i+current.stepsRequired;
+                    if(end < current.END_STEP){
+                        points+= current.stepsRequired;
+                    }
+                    i+= current.stepsRequired - 1;
+                    current = ridesLeftToStart.pollFirst();
+                }
+            }
+            return points;
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            BookingSequence other = (BookingSequence) o;
+            return  other.getPoints()  -getPoints();
         }
     }
 
@@ -110,7 +155,6 @@ public class RideOptimizer {
                 }
             }
         }
-
 
         private Position postPos(int end) {
             for(int i = end;i<schedule.length;i++){

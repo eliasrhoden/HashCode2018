@@ -1,4 +1,7 @@
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -12,7 +15,7 @@ public class RideOptimizerTest {
                 new Position(0,0),
                 new Position(0,5),
                 1,10);
-        RideOptimizer opt = new RideOptimizer(2,11);
+        RideOptimizer opt = new RideOptimizer(2,11,1);
 
         opt.bookCar(0,r1,2);
 
@@ -633,6 +636,65 @@ public class RideOptimizerTest {
         res = RideOptimizer.CarScheduleAnalyzer.getFreeTime(schedule);
 
         assertEquals(exp,res);
+
+    }
+
+    @Test
+    public void testPoints(){
+        RideOptimizer opt = new RideOptimizer(1,10,5);
+
+        Ride r1 = new Ride(
+                1,
+                new Position(0,0),
+                new Position(0,2),
+                0, 4);
+        Ride r2 = new Ride(
+                2,
+                new Position(0,3),
+                new Position(0,5),
+                5, 9);
+
+        RideOptimizer.BookingSequence s1 = new RideOptimizer.BookingSequence(10,5);
+
+        s1.addRide(r1);
+        s1.addRide(r2);
+
+        assertEquals(14,s1.getPoints());
+
+
+    }
+
+    @Test
+    public void testBookSeqSort(){
+        RideOptimizer opt = new RideOptimizer(1,10,5);
+
+        Ride r1 = new Ride(
+                1,
+                new Position(0,0),
+                new Position(0,2),
+                0, 4);
+        Ride r2 = new Ride(
+                2,
+                new Position(0,3),
+                new Position(0,5),
+                5, 9);
+
+        RideOptimizer.BookingSequence s1 = new RideOptimizer.BookingSequence(10,5);
+        RideOptimizer.BookingSequence s2 = new RideOptimizer.BookingSequence(5,5);
+        s1.addRide(r1);
+        s1.addRide(r2);
+
+        LinkedList<RideOptimizer.BookingSequence> lis = new LinkedList<>();
+
+        lis.add(s1);
+        lis.add(s2);
+
+        Collections.sort(lis);
+
+        RideOptimizer.BookingSequence first = lis.getFirst();
+
+        assertEquals(10,first.timeSteps);
+
 
     }
 
