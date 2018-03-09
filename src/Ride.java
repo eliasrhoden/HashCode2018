@@ -76,9 +76,9 @@ public class Ride implements Comparable {
 
     @Override
     public String toString(){
-        String res = "Ride "+ ID + " ";
-        res += "Start: " + startPosition.toString() + " ";
-        res += "End: " + endPosition.toString() + " ";
+        String res = "Ride id:"+ ID + " ";
+        res += "StartStep: " + startPosition.toString() + " ";
+        res += "EndStep: " + endPosition.toString() + " ";
         res += "No of steps: " + stepsRequired + " ";
 
         return res;
