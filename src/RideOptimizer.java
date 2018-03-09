@@ -1,5 +1,3 @@
-import java.sql.Time;
-import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +10,7 @@ public class RideOptimizer {
     public Ride[][] schedules;
     private int bonus;
     private final int DEEP_LVL = 5;
+    private final int CARS_SIMULATNIOUSLY = 3;
 
     public RideOptimizer(int nrOfCars, int nrOfTimeSteps, int bonus){
         schedules = new Ride[nrOfCars][nrOfTimeSteps];
@@ -21,16 +20,17 @@ public class RideOptimizer {
     }
 
     public List<Car> optimzeCarRoutes(List<Ride> rides){
+        System.out.println("No of rides: " + rides.size());
         System.out.println("Starting rides optimizing!");
 
         Ride.sortByStartStep(rides);
 
         for(int car = 0;car < schedules.length;car++){
 
-            List<BookingSequence> possibleBookings = new LinkedList<>();
+            List<BookingSequence> possibleBookings;
             List<Ride> ridesToUse = new LinkedList<>(rides);
 
-            findPossibleBookingSequnces(ridesToUse,possibleBookings);
+            possibleBookings = findPossibleBookingSequnces(ridesToUse);
             Collections.sort(possibleBookings);
 
             bookSequence(possibleBookings.get(0),car);
@@ -40,11 +40,14 @@ public class RideOptimizer {
     }
 
     private void bookSequence(BookingSequence bookingSequence, int car) {
+        for(Ride r:bookingSequence.rides){
 
+        }
     }
 
-    private void findPossibleBookingSequnces(List<Ride> ridesToUse, List<BookingSequence> possibleBookings) {
+    private List<BookingSequence> findPossibleBookingSequnces(List<Ride> ridesToUse) {
 
+        return null;
     }
 
 
