@@ -10,20 +10,23 @@ public class BookingComboFinderTest {
 
     @Test
     public void manualTest1(){
+        /*
         LinkedList<Integer> rideIds = new LinkedList<>();
         rideIds.add(1);
         rideIds.add(2);
         List<List<Integer>[]> result = BookingComboFinder.getAllCombosOfBookingBetweenCars(2,rideIds);
         System.out.println("hallo");
+        */
     }
 
     @Test
     public void test1(){
+        /*
         LinkedList<Integer> rideIds = new LinkedList<>();
         rideIds.add(1);
         rideIds.add(2);
         List<List<Integer>[]> result = BookingComboFinder.getAllCombosOfBookingBetweenCars(2,rideIds);
-
+        */
 
 
         List<Integer>[][] senario = new LinkedList[2][11];
@@ -117,6 +120,7 @@ public class BookingComboFinderTest {
          * C2:
          *
          * */
+
     }
 
 

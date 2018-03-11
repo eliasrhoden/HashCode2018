@@ -7,10 +7,10 @@ public class OutputMaker {
 
     static String outPut = "";
 
-    public static void createOutput(List<Car> cars){
+    public static void createOutput(List<Car> cars, String fileName){
         PrintWriter out = null;
         try {
-            out = new PrintWriter("output/carOutput.txt");
+            out = new PrintWriter("output/" + fileName +".txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

@@ -10,13 +10,15 @@ public class RideOptimizer {
     public static List<Ride>[] schedules;
     private int bonus;
     private final int DEEP_LVL = 5;
-    private final int CARS_SIMULATNIOUSLY = 3;
+    private final int CARS_SIMULATNIOUSLY = 5;
     private final int TIMESTEPS;
-    private final int MAX_RIDE_SUB_LIST = 10;
+    private final int MAX_RIDE_SUB_LIST = 5;
+    private final int NR_OF_CARS;
 
 
     public RideOptimizer(int nrOfCars, int nrOfTimeSteps, int bonus){
         schedules = new List[nrOfCars];
+        NR_OF_CARS = nrOfCars;
         for(int i = 0;i<schedules.length;i++)
             schedules[i] = new LinkedList<>();
         TIMESTEPS =nrOfTimeSteps;
@@ -33,24 +35,30 @@ public class RideOptimizer {
         boolean ridesLeft = true;
 
         while(ridesLeft){
-            List<Scenario> possibleBookingScenarios;
-            Ride.sortByStartStep(rides);
-            int endSUbList = MAX_RIDE_SUB_LIST;
-            int ridesSiz = rides.size();
-            if(ridesSiz < MAX_RIDE_SUB_LIST)
-                endSUbList = ridesSiz;
-            List<Ride> ridesToUse = new LinkedList<>(rides.subList(0,endSUbList));
+            for(int i = 0;i<NR_OF_CARS;i++) {
+                List<Scenario> possibleBookingScenarios;
+                Ride.sortByStartStep(rides);
+                int endSUbList = MAX_RIDE_SUB_LIST;
+                int ridesSiz = rides.size();
+                if (ridesSiz < MAX_RIDE_SUB_LIST)
+                    endSUbList = ridesSiz;
 
-            possibleBookingScenarios = generateBookingScenarios(ridesToUse);
-            Collections.sort(possibleBookingScenarios);
+                List<Ride> ridesToUse = new LinkedList<>(rides.subList(0, endSUbList));
+                int subNrOfCars = CARS_SIMULATNIOUSLY;
+                if (i + subNrOfCars >= NR_OF_CARS)
+                    subNrOfCars = NR_OF_CARS - i;
+                possibleBookingScenarios = generateBookingScenarios(ridesToUse, subNrOfCars, i);
+                Collections.sort(possibleBookingScenarios);
 
-            for(BookingSequence sec:possibleBookingScenarios.get(0).carsheduels)
-                bookSequence(sec,rides);
+                for (BookingSequence sec : possibleBookingScenarios.get(0).carsheduels)
+                    bookSequence(sec, rides);
+                i += subNrOfCars - 1;
 
-            int noOfRides = rides.size();
-            System.out.println("No of rides left: " + noOfRides);
-            if(noOfRides <= 0)
-                ridesLeft = false;
+                int noOfRides = rides.size();
+                System.out.println("No of rides left: " + noOfRides);
+                if (noOfRides <= 0)
+                    ridesLeft = false;
+            }
 
         }
         return createCarsFromSchedule(schedules);
@@ -65,24 +73,32 @@ public class RideOptimizer {
     }
 
 
-    private List<Scenario> generateBookingScenarios(List<Ride> ridesToUse, int nrOfCars) {
+    private List<Scenario> generateBookingScenarios(List<Ride> ridesToUse, int nrOfCars, int carOffset) {
         List<Scenario> scenarios = new LinkedList<>();
-        List<Integer> rideIDs = getRideIds(ridesToUse);
-        List<List<Integer>[]> rideCombos = BookingComboFinder.getAllCombosOfBookingBetweenCars(nrOfCars,rideIDs);
-
-        for(List<Integer>[] scenInInteger:rideCombos){
-            Scenario scenario = getScenarioFromInteger(scenInInteger);
+        List<List<Ride>[]> rideCombos = BookingComboFinder.getAllCombosOfBookingBetweenCars(nrOfCars,ridesToUse);
+        //int tot = rideCombos.size();
+        int i = 0;
+        for(List<Ride>[] scenInInteger:rideCombos){
+            Scenario scenario = getScenarioFromRideList(scenInInteger, carOffset);
+            scenarios.add(scenario);
+            //i++;
+            //printProgress(i,tot);
         }
 
-        return null;
+        return scenarios;
     }
 
-    private Scenario getScenarioFromInteger(List<Integer>[] scenInInteger) {
+    private Scenario getScenarioFromRideList(List<Ride>[] scenInInteger, int carOffset) {
         Scenario scenario = new Scenario();
         for(int car = 0;car < scenInInteger.length;car++){
-            for(int rideId)
+            LinkedList<Ride> carShedule = new LinkedList<>(scenInInteger[car]);
+            BookingSequence bookSch = new BookingSequence(TIMESTEPS,bonus,car + carOffset);
+            for(Ride r:carShedule){
+                bookSch.addRide(r);
+            }
+            scenario.carsheduels.add(bookSch);
         }
-        return null;
+        return scenario;
     }
 
     private List<Integer> getRideIds(List<Ride> ridesToUse) {
@@ -163,7 +179,7 @@ public class RideOptimizer {
         }
 
         public int getPoints(){
-            LinkedList<Ride> ridesLeftToStart = new LinkedList<>(schedules[car]);
+            LinkedList<Ride> ridesLeftToStart = new LinkedList<>();
             ridesLeftToStart.addAll(rides);
 
             Ride current = ridesLeftToStart.pollFirst();
